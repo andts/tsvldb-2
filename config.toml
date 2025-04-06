@@ -1,7 +1,7 @@
-base_url = "https://YOUR_URL.TLD"
-title = "site title"
-description = "YOUR_SITE_DESCRIPTION"
-author = "YOUR_NAME"
+base_url = "https://tsvldb.com"
+title = "Public Notes"
+description = "Public Notes"
+author = "Andrii Tsvielodub"
 theme = "tabi"
 generate_feeds = true
 compile_sass = true
@@ -31,6 +31,7 @@ index_format = "elasticlunr_json"
 [markdown]
 highlight_code = true
 bottom_footnotes = true
+external_links_target_blank = true
 # To use a Zola built-in theme, CSP needs to allow unsafe-inline for style-src.
 highlight_theme = "css"
 smart_punctuation = true
@@ -229,11 +230,16 @@ invert_title_order = false
 # https://osc.garden/blog/automating-social-media-cards-zola/
 # social_media_card = ""
 
+#menu = [
+#    { name = "blog", url = "blog", trailing_slash = true },
+#    { name = "archive", url = "archive", trailing_slash = true },
+#    { name = "tags", url = "tags", trailing_slash = true },
+#    { name = "projects", url = "projects", trailing_slash = true },
+#]
 menu = [
-    { name = "blog", url = "blog", trailing_slash = true },
-    { name = "archive", url = "archive", trailing_slash = true },
-    { name = "tags", url = "tags", trailing_slash = true },
-    { name = "projects", url = "projects", trailing_slash = true },
+    { name = "Posts", url = "posts", trailing_slash = true },
+    #    { name = "Projects", url = "projects", trailing_slash = true },
+    #    { name = "About Me", url = "about-me", trailing_slash = true },
 ]
 
 # The RSS icon will be shown if (1) it's enabled and (2) the following variable is set to true.
@@ -316,6 +322,9 @@ enable_csp = true
 # custom_subset = true
 
 [extra.analytics]
+service = "umami"
+id = "f0e51e52-1de4-4abe-9cdb-dac6967c3ae0"
+
 # Specify which analytics service you want to use.
 # Supported options: ["goatcounter", "umami", "plausible"]
 # service = ""
