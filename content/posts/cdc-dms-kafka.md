@@ -3,6 +3,7 @@ title = "Building a Change Data Capture Pipeline with AWS and Kafka"
 description = "This blog post provides a step-by-step guide on how to build and configure a change data capture pipeline that captures all changes in a database and writes them into an audit log table in a useful format. The post covers the architecture of the pipeline, services used, and tips on how to set up each component."
 date = "2024-04-28"
 updated = "2024-04-28"
+draft = true
 +++
 
 # Intro
