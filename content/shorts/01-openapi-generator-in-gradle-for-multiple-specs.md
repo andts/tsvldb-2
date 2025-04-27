@@ -23,9 +23,9 @@ or nobody bothered to fix this issue due to the lack of tests* 🤔
 
 # The Cause
 
-In the existing configuration of the project, each generation task used the same folder as a target -- `generated/src`. 
+In the existing configuration of the project, each generation task used the same folder as a target -- `build/generated/openapi`. 
 This worked fine since each spec had a different package, so the actual code didn't mix. But apart from the code, 
-the plugin, for some reason, also generated a pack of tooling-related files (like a maven pom.xml, some settings, etc). 
+the plugin, for some reason, also generated a pack of tooling-related files (like a maven pom.xml, etc). 
 The code didn't mix due to different packages, but those files did, and each next task has overwritten the meta files 
 from the previous.  
 
@@ -34,13 +34,40 @@ did not match what was generated before, and it's right about time to go generat
 
 ## Example
 
-So let's say we have two OpenAPI specs that we will use to generate client code
+Let's reproduce the issue first. We have two OpenAPI specs that we will use to generate server API code.
+
+Ths full source of example is available here - . The code is the same, but Jas several more classes so it would compile.
+
+With this configuration, each time we run `Gradle build` the OpenApi generator tasks will execute, even though the specs didn't change. Let's try to fix that.
 
 # The Crutch
 
-A logical solution that comes to mind is to not generate those meta-files.   
+A logical solution that comes to mind is to disable generation of those project files. Unfortunately, all I could find are issues that request this feature.
 
-To overcome this I had to do several things:
-1. Try to disable generation of as much `meta` files as possible - we do not need all the project build files, we have them in the project already.
-2. Generate code for each specification into a separate subfolder
-3. Add the subfolder with generated code into the sourceSet to be picked up by Gradle
+Instead, we will do two things - exclude as much project files as possible from generation, and extract each API into its own folder. Technically, you could only do the second, and it would solve the issue, but I wanted to keep the sources as clean as possible.
+
+## Cleanup
+
+The only working way to remove unnecessary project files happens to be through `.openapi-ignore-files`. 
+Put a file like this into the root (or wherever you like):
+
+This file excludes from generation all files that are not in the source directory. Exactly what we needed.
+
+But there is one issue still which requires the second step. There are two metadata file in .OpenApi folder files and version, that contain list of all generated files and version of the generator accordingly. And when several tasks generate sources - they will overwrite those files. Let's continue.
+
+## Extraction
+
+Now let's put every API interface into its own folder.
+We will change the task configuration a bit, and will write some more config to attach the sources to the sourceset.
+
+The approach here is automated, so you don't have to add the sources of every task but hand.
+
+Note we had to disable the default task, so it wouldn't mix with our actual generator tasks.
+
+# Summary
+
+You can try this approach if you encounter similar issues in your projects 
+To reiterate, you might need this if:
+- you build using Gradle
+- you have several OpenApi specs
+- you build often
