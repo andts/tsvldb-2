@@ -5,9 +5,9 @@ updated = "2025-04-29"
 copy_button = true
 +++
 
-This is a short note on how to configure a Java Gradle project that uses OpenAPI Generator plugin 
-to generate client/server code from multiple specifications in a way that the code will not
-be regenerated on every project build.  
+This is a short note on configuring a Java Gradle project that uses the OpenAPI Generator plugin
+to generate client/server code from multiple specifications, preventing unnecessary code regeneration
+during project builds.  
 
 {{ admonition(type="info", title="Maybe this is fixed already?", text="This is an issue I faced on a project 
 in late 2024, and was reproducible at the time of writing this note, but no guarantees this is still relevant.") }}
@@ -15,7 +15,7 @@ in late 2024, and was reproducible at the time of writing this note, but no guar
 # Problem
 
 On a project that uses Gradle as a build system, there was an issue when all client/server code
-generated from OpenAPI specs was regenerated for every build. It is expected when doing a full rebuild
+generated from OpenAPI specs was regenerated for every build. This is expected when doing a full rebuild
 (a `gradle clean build` locally or in a CI pipeline), but why would you want that when you are just running
 your unit tests? This actually makes the process of writing unit tests not very pleasant.
 
@@ -25,9 +25,8 @@ your unit tests? This actually makes the process of writing unit tests not very 
 # The Cause
 
 In the existing configuration of the project, each generator task used the same folder as a target -- `build/generated/openapi`. 
-This worked fine for the API code since each spec was built to a different package and didn't mix. 
-But apart from the code, the plugin, for some reason, also generated a pack of project files 
-(like a maven pom.xml, etc).   
+This worked fine for the API code since each spec was built to a different package and didn't mix.
+However, besides the code, the plugin also generates a set of project files (like maven pom.xml, etc.).   
 The code didn't mix due to different packages, but those files did, and each next task was overwriting project files 
 from the previous.  
 Because of that, for every build Gradle considered that the generated code (those project files specifically) 
@@ -35,9 +34,9 @@ did not match what was generated before, and it's right about time to go generat
 
 ## Example
 
-Let's make a minimal reproduction of the issue first. 
+Let's make a minimal reproduction of the issue first. Here's the recipe. 
 
-Take two OpenAPI specs to your liking that we will use to generate Server API interfaces.
+1. Take two OpenAPI specs to your liking to generate Server API interfaces.
 
 **Spec A:**
 
@@ -117,7 +116,7 @@ components:
     ...
 ```
 
-And season them with a simple Gradle build:
+2. Season them with a simple Gradle build
 
 **Build Config:**
 
@@ -177,13 +176,15 @@ compileJava.dependsOn tasks.inventoryApi
 compileJava.dependsOn tasks.catalogApi
 ```
 
+3. Run `gradle build`
+
 The full source of the initial example is available here -- 
 [github](https://github.com/andts/openapi-multi-spec-build-example/tree/7818c8028647b06877565592f60b1767920895e5). 
 It has a bit more code to be a fully functional app.
 
 With this configuration, each time we run `gradle build` the OpenAPI generator tasks will execute, even if the specs didn't change.
 Even if nothing has changed at all.
-```terminaloutput
+```
 ❯ gradle build
 
 > Task :catalogApi
@@ -236,7 +237,7 @@ but I wanted to keep the sources as clean as possible.
 
 ## Cleanup 🧹
 
-The only working way to remove unnecessary project files happens to be through `.openapi-ignore-files`. 
+The only working way to remove unnecessary project files happens to be through `.openapi-generator-ignore`. 
 Put a file like this into the root (or wherever you like):
 ```
 *
@@ -308,7 +309,7 @@ so it wouldn't mix with our custom generator tasks. Otherwise the build wouldn't
 
 
 This is what we get for the first clean build:
-```terminaloutput
+```
 ❯ gradle build
 
 > Task :catalogApi
@@ -347,7 +348,7 @@ BUILD SUCCESSFUL in 1s
 ```
 
 And this is the process when only the application code has changed, but not the specs:
-```terminaloutput
+```
 ❯ gradle build
 
 > Task :catalogApi UP-TO-DATE
@@ -372,8 +373,8 @@ BUILD SUCCESSFUL in 1s
 ```
 As you can see, Gradle will correctly detect that the generated code is `UP-TO-DATE` and will skip the tasks.
 
-You can try this approach if you encounter similar issues in your projects.   
-To reiterate, you might need this if:
+Consider this approach if you encounter similar issues in your projects.   
+This solution is particularly useful if you:
 - build with Gradle
 - several OpenAPI specs
 - you build often
