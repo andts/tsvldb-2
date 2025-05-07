@@ -1,7 +1,7 @@
 +++
 title = "How to generate sources from multiple OpenAPI specifications with Gradle"
 date = "2025-04-06"
-updated = "2025-04-06"
+updated = "2025-04-29"
 copy_button = true
 +++
 
@@ -177,8 +177,9 @@ compileJava.dependsOn tasks.inventoryApi
 compileJava.dependsOn tasks.catalogApi
 ```
 
-Ths full source of example is available here -- (**gh repo link**). It has a bit more code to be a fully functional app. 
-You can compare the differences using the commit history. 
+The full source of the initial example is available here -- 
+[github](https://github.com/andts/openapi-multi-spec-build-example/tree/7818c8028647b06877565592f60b1767920895e5). 
+It has a bit more code to be a fully functional app.
 
 With this configuration, each time we run `gradle build` the OpenAPI generator tasks will execute, even if the specs didn't change.
 Even if nothing has changed at all.
@@ -224,7 +225,7 @@ Let's try to fix that.
 # The Crutch 🩼
 
 A logical solution that comes to mind is to disable generation of those project files. 
-Unfortunately, all I could find are issues that request this feature -- (**generator issue links**)
+Unfortunately, all I could find are issues like this one -- [[REQ] Option to generate only the models/controllers](https://github.com/OpenAPITools/openapi-generator/issues/20538)
 
 Instead, we will do two things:
 1. exclude as much project files as possible from generation, and 
@@ -377,4 +378,5 @@ To reiterate, you might need this if:
 - several OpenAPI specs
 - you build often
 
-The example code is available here: (**gh repo link**)
+The example code is available here: [github](https://github.com/andts/openapi-multi-spec-build-example). 
+You can see the changes for the steps of this post in the commit history. 
