@@ -1,7 +1,8 @@
 +++
 [extra]
-header = {title = "Boring stuff" }
-section_path = "posts/_index.md"
+header = {title = "A Private Low Entropy Broadcast" }
+
+section_path = "shorts/_index.md"
 max_posts = 5
 +++
 
